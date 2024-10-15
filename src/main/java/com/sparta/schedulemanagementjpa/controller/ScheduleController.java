@@ -3,6 +3,7 @@ package com.sparta.schedulemanagementjpa.controller;
 import com.sparta.schedulemanagementjpa.entity.Schedule;
 import com.sparta.schedulemanagementjpa.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,15 @@ import java.util.List;
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
+
+    // 일정 페이징 조회 (GET)
+    @GetMapping("/paged")
+    public ResponseEntity<Page<Schedule>> getPagedSchedules(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<Schedule> schedules = scheduleService.getPagedSchedules(page, size);
+        return ResponseEntity.ok(schedules);
+    }
 
     // 일정 생성 (POST)
     @PostMapping
