@@ -2,6 +2,7 @@ package com.sparta.schedulemanagementjpa.controller;
 
 import com.sparta.schedulemanagementjpa.entity.User;
 import com.sparta.schedulemanagementjpa.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class UserController {
 
     // 유저 생성 (POST)
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
         User createdUser = userService.createUser(user);
         return ResponseEntity.ok(createdUser);
     }

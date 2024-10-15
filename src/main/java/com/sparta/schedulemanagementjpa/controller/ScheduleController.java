@@ -2,6 +2,7 @@ package com.sparta.schedulemanagementjpa.controller;
 
 import com.sparta.schedulemanagementjpa.entity.Schedule;
 import com.sparta.schedulemanagementjpa.service.ScheduleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class ScheduleController {
 
     // 일정 생성 (POST)
     @PostMapping
-    public ResponseEntity<Schedule> createSchedule(@RequestBody Schedule schedule) {
+    public ResponseEntity<Schedule> createSchedule(@Valid @RequestBody Schedule schedule) {
         Schedule createdSchedule = scheduleService.createSchedule(schedule);
         return ResponseEntity.ok(createdSchedule);
     }
