@@ -8,6 +8,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity // 이 클래스가 데이터베이스 테이블과 매핑된다는 것을 의미
 @Getter
@@ -34,6 +36,14 @@ public class Schedule {
 
     @LastModifiedDate // 수정 일자
     private LocalDateTime modifiedAt;
+
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
+
+    // getComments 메서드
+    public List<Comment> getComments() {
+        return this.comments;
+    }
 
     // 생성자, 수정자 메서드는 Lombok에서 제공하는 @Getter, @Setter를 통해 자동 생성
 }
