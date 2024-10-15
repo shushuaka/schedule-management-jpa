@@ -45,5 +45,9 @@ public class Schedule {
         return this.comments;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user; // 일정 작성 유저
+
     // 생성자, 수정자 메서드는 Lombok에서 제공하는 @Getter, @Setter를 통해 자동 생성
 }
