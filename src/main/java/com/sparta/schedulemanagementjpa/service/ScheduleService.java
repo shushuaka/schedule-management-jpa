@@ -3,6 +3,10 @@ package com.sparta.schedulemanagementjpa.service;
 import com.sparta.schedulemanagementjpa.entity.Schedule;
 import com.sparta.schedulemanagementjpa.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,6 +16,12 @@ import java.util.List;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
+
+    // 일정 페이징 조회
+    public Page<Schedule> getPagedSchedules(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "modifiedAt"));
+        return scheduleRepository.findAll(pageable);
+    }
 
     // 일정 생성 (저장)
     public Schedule createSchedule(Schedule schedule) {
