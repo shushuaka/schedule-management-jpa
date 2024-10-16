@@ -1,5 +1,7 @@
 package com.sparta.schedulemanagementjpa.service;
 
+import com.sparta.schedulemanagementjpa.dto.ScheduleRequestDto;
+import com.sparta.schedulemanagementjpa.dto.ScheduleResponseDto;
 import com.sparta.schedulemanagementjpa.entity.Schedule;
 import com.sparta.schedulemanagementjpa.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service // 이 클래스가 비즈니스 로직을 처리하는 서비스 클래스임을 명시
 @RequiredArgsConstructor
@@ -18,41 +21,83 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
 
     // 일정 페이징 조회
-    public Page<Schedule> getPagedSchedules(int page, int size) {
+    public Page<ScheduleResponseDto> getPagedSchedules(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "modifiedAt"));
-        return scheduleRepository.findAll(pageable);
+        return scheduleRepository.findAll(pageable)
+        .map(schedule -> new ScheduleResponseDto(
+                schedule.getId(),
+                schedule.getTitle(),
+                schedule.getContent()
+        ));
     }
 
     // 일정 생성 (저장)
-    public Schedule createSchedule(Schedule schedule) {
-        return scheduleRepository.save(schedule);
+    public ScheduleResponseDto createSchedule(ScheduleRequestDto scheduleRequestDto) {
+
+        // DTO -> 엔티티 변환
+        Schedule schedule = new Schedule();
+        schedule.setTitle(scheduleRequestDto.getTitle());
+        schedule.setContent(scheduleRequestDto.getContent());
+
+        // 엔티티 저장
+        Schedule savedSchedule = scheduleRepository.save(schedule);
+
+        // 엔티티 -> DTO 변환 후 반환
+        return new ScheduleResponseDto(
+                savedSchedule.getId(),
+                savedSchedule.getTitle(),
+                savedSchedule.getContent()
+        );
     }
 
     // 모든 일정 조회
-    public List<Schedule> getAllSchedules() {
-        return scheduleRepository.findAll();
+    public List<ScheduleResponseDto> getAllSchedules() {
+        List<Schedule> schedules = scheduleRepository.findAll();
+        return schedules.stream()
+                .map(schedule -> new ScheduleResponseDto(
+                        schedule.getId(),
+                        schedule.getTitle(),
+                        schedule.getContent()
+                ))
+                .collect(Collectors.toList());
     }
 
     // 특정 일정 조회
-    public Schedule getScheduleById(Long id) {
-        return scheduleRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("해당 일정이 존재하지 않습니다.")
+    public ScheduleResponseDto getScheduleById(Long id) {
+        Schedule schedule = scheduleRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("해당 일정이 존재하지 않습니다."));
+        return new ScheduleResponseDto(
+                schedule.getId(),
+                schedule.getTitle(),
+                schedule.getContent()
         );
     }
 
     // 일정 수정
-    public Schedule updateSchedule(Long id, Schedule scheduleDetails) {
-        Schedule schedule = getScheduleById(id);
-        schedule.setTitle(scheduleDetails.getTitle());
-        schedule.setContent(scheduleDetails.getContent());
-        schedule.setModifiedAt(scheduleDetails.getModifiedAt());
+    public ScheduleResponseDto updateSchedule(Long id, ScheduleRequestDto scheduleRequestDto) {
+        Schedule schedule = scheduleRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 일정이 존재하지 않습니다."));
 
-        return scheduleRepository.save(schedule);
+        // DTO의 데이터를 엔티티에 반영
+        schedule.setTitle(scheduleRequestDto.getTitle());
+        schedule.setContent(scheduleRequestDto.getContent());
+        schedule.setModifiedAt(scheduleRequestDto.getModifiedAt());
+
+        // 수정된 엔티티 저장
+        Schedule updatedSchedule = scheduleRepository.save(schedule);
+
+        // 엔티티 -> DTO 변환 후 반환
+        return new ScheduleResponseDto(
+                updatedSchedule.getId(),
+                updatedSchedule.getTitle(),
+                updatedSchedule.getContent()
+        );
     }
 
     // 일정 삭제
     public void deleteSchedule(Long id) {
-        Schedule schedule = getScheduleById(id);
+        Schedule schedule = scheduleRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 일정이 존재하지 않습니다."));
         scheduleRepository.delete(schedule);
     }
 }

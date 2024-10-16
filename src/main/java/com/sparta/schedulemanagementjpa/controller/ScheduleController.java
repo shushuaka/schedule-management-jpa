@@ -1,6 +1,7 @@
 package com.sparta.schedulemanagementjpa.controller;
 
-import com.sparta.schedulemanagementjpa.entity.Schedule;
+import com.sparta.schedulemanagementjpa.dto.ScheduleRequestDto;
+import com.sparta.schedulemanagementjpa.dto.ScheduleResponseDto;
 import com.sparta.schedulemanagementjpa.service.ScheduleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,38 +20,38 @@ public class ScheduleController {
 
     // 일정 페이징 조회 (GET)
     @GetMapping("/paged")
-    public ResponseEntity<Page<Schedule>> getPagedSchedules(
+    public ResponseEntity<Page<ScheduleResponseDto>> getPagedSchedules(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<Schedule> schedules = scheduleService.getPagedSchedules(page, size);
+        Page<ScheduleResponseDto> schedules = scheduleService.getPagedSchedules(page, size);
         return ResponseEntity.ok(schedules);
     }
 
     // 일정 생성 (POST)
     @PostMapping
-    public ResponseEntity<Schedule> createSchedule(@Valid @RequestBody Schedule schedule) {
-        Schedule createdSchedule = scheduleService.createSchedule(schedule);
+    public ResponseEntity<ScheduleResponseDto> createSchedule(@Valid @RequestBody ScheduleRequestDto scheduleRequestDto) {
+        ScheduleResponseDto createdSchedule = scheduleService.createSchedule(scheduleRequestDto);
         return ResponseEntity.ok(createdSchedule);
     }
 
     // 모든 일정 조회 (GET)
     @GetMapping
-    public ResponseEntity<List<Schedule>> getAllSchedules() {
-        List<Schedule> schedules = scheduleService.getAllSchedules();
+    public ResponseEntity<List<ScheduleResponseDto>> getAllSchedules() {
+        List<ScheduleResponseDto> schedules = scheduleService.getAllSchedules();
         return ResponseEntity.ok(schedules);
     }
 
     // 특정 일정 조회 (GET)
     @GetMapping("/{id}")
-    public ResponseEntity<Schedule> getScheduleById(@PathVariable Long id) {
-        Schedule schedule = scheduleService.getScheduleById(id);
+    public ResponseEntity<ScheduleResponseDto> getScheduleById(@PathVariable Long id) {
+        ScheduleResponseDto schedule = scheduleService.getScheduleById(id);
         return ResponseEntity.ok(schedule);
     }
 
     // 일정 수정 (PUT)
     @PutMapping("/{id}")
-    public ResponseEntity<Schedule> updateSchedule(@PathVariable Long id, @RequestBody Schedule scheduleDetails) {
-        Schedule updatedSchedule = scheduleService.updateSchedule(id, scheduleDetails);
+    public ResponseEntity<ScheduleResponseDto> updateSchedule(@PathVariable Long id, @RequestBody ScheduleRequestDto scheduleRequestDto) {
+        ScheduleResponseDto updatedSchedule = scheduleService.updateSchedule(id, scheduleRequestDto);
         return ResponseEntity.ok(updatedSchedule);
     }
 
