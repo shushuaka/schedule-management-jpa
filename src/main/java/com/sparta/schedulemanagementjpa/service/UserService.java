@@ -64,7 +64,9 @@ public class UserService {
 
     // 유저 삭제
     public void deleteUser(Long id) {
-        User user = getUserById(id);
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
+        );
         userRepository.delete(user);
     }
 }
