@@ -1,5 +1,7 @@
 package com.sparta.schedulemanagementjpa.service;
 
+import com.sparta.schedulemanagementjpa.dto.UserRequestDto;
+import com.sparta.schedulemanagementjpa.dto.UserResponseDto;
 import com.sparta.schedulemanagementjpa.entity.User;
 import com.sparta.schedulemanagementjpa.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +16,15 @@ public class UserService {
     private final UserRepository userRepository;
 
     // 유저 생성
-    public User createUser(User user) {
-        return userRepository.save(user);
+    public UserResponseDto createUser(UserRequestDto userRequestDto) {
+        User user = new User();
+        user.setUserName(userRequestDto.getUserName());
+        user.setEmail(userRequestDto.getEmail());
+
+        userRepository.save(user);
+
+        UserResponseDto userResponseDto = new UserResponseDto(user.getUserName(), user.getEmail());
+        return userResponseDto;
     }
 
     // 모든 유저 조회
