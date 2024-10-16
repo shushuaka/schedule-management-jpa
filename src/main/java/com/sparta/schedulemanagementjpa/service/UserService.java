@@ -7,6 +7,7 @@ import com.sparta.schedulemanagementjpa.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,13 +48,18 @@ public class UserService {
     }
 
     // 유저 수정
-    public User updateUser(Long id, User userDetails) {
-        User user = getUserById(id);
-        user.setUserName(userDetails.getUserName());
-        user.setEmail(userDetails.getEmail());
-        user.setModifiedAt(userDetails.getModifiedAt());
+    public UserResponseDto updateUser(Long id, UserRequestDto userRequestDto) {
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
+        );
 
-        return userRepository.save(user);
+        user.setUserName(userRequestDto.getUserName());
+        user.setEmail(userRequestDto.getEmail());
+        user.setModifiedAt(LocalDateTime.now());
+
+        User updateUser = userRepository.save(user);
+
+        return new UserResponseDto(updateUser.getUserName(), updateUser.getEmail());
     }
 
     // 유저 삭제
