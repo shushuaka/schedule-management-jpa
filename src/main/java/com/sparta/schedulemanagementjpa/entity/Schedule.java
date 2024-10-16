@@ -40,14 +40,14 @@ public class Schedule {
     @LastModifiedDate // 수정 일자
     private LocalDateTime modifiedAt;
 
+    @Column(nullable = false)
+    private LocalDateTime date = LocalDateTime.now(); // 기본값 설정 - 현재 날짜 및 시간
+
+    // 댓글 목록 (OneToMany 관계)
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
-    // getComments 메서드
-    public List<Comment> getComments() {
-        return this.comments;
-    }
-
+    // 작성 유저 (ManyToOne 관계)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user; // 일정 작성 유저

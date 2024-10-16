@@ -3,7 +3,9 @@ package com.sparta.schedulemanagementjpa.service;
 import com.sparta.schedulemanagementjpa.dto.ScheduleRequestDto;
 import com.sparta.schedulemanagementjpa.dto.ScheduleResponseDto;
 import com.sparta.schedulemanagementjpa.entity.Schedule;
+import com.sparta.schedulemanagementjpa.entity.User;
 import com.sparta.schedulemanagementjpa.repository.ScheduleRepository;
+import com.sparta.schedulemanagementjpa.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
+    private final UserRepository userRepository;
 
     // 일정 페이징 조회
     public Page<ScheduleResponseDto> getPagedSchedules(int page, int size) {
@@ -27,15 +30,22 @@ public class ScheduleService {
         .map(schedule -> new ScheduleResponseDto(
                 schedule.getId(),
                 schedule.getTitle(),
-                schedule.getContent()
+                schedule.getContent(),
+                schedule.getUserName()
         ));
     }
 
     // 일정 생성 (저장)
     public ScheduleResponseDto createSchedule(ScheduleRequestDto scheduleRequestDto) {
 
+        // User ID를 사용하여 User 엔티티를 찾음
+        User user = userRepository.findById(scheduleRequestDto.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+
         // DTO -> 엔티티 변환
         Schedule schedule = new Schedule();
+        schedule.setUser(user);
+        schedule.setUserName(user.getUserName());
         schedule.setTitle(scheduleRequestDto.getTitle());
         schedule.setContent(scheduleRequestDto.getContent());
 
@@ -46,7 +56,8 @@ public class ScheduleService {
         return new ScheduleResponseDto(
                 savedSchedule.getId(),
                 savedSchedule.getTitle(),
-                savedSchedule.getContent()
+                savedSchedule.getContent(),
+                savedSchedule.getUserName()
         );
     }
 
@@ -57,7 +68,8 @@ public class ScheduleService {
                 .map(schedule -> new ScheduleResponseDto(
                         schedule.getId(),
                         schedule.getTitle(),
-                        schedule.getContent()
+                        schedule.getContent(),
+                        schedule.getUserName()
                 ))
                 .collect(Collectors.toList());
     }
@@ -69,7 +81,8 @@ public class ScheduleService {
         return new ScheduleResponseDto(
                 schedule.getId(),
                 schedule.getTitle(),
-                schedule.getContent()
+                schedule.getContent(),
+                schedule.getUserName()
         );
     }
 
@@ -90,7 +103,8 @@ public class ScheduleService {
         return new ScheduleResponseDto(
                 updatedSchedule.getId(),
                 updatedSchedule.getTitle(),
-                updatedSchedule.getContent()
+                updatedSchedule.getContent(),
+                updatedSchedule.getUserName()
         );
     }
 
