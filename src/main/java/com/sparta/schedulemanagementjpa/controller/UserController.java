@@ -3,13 +3,16 @@ package com.sparta.schedulemanagementjpa.controller;
 import com.sparta.schedulemanagementjpa.dto.UserRequestDto;
 import com.sparta.schedulemanagementjpa.dto.UserResponseDto;
 import com.sparta.schedulemanagementjpa.entity.User;
+import com.sparta.schedulemanagementjpa.repository.UserRepository;
 import com.sparta.schedulemanagementjpa.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
@@ -27,16 +30,16 @@ public class UserController {
 
     // 모든 유저 조회 (GET)
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+    public ResponseEntity<List<UserResponseDto>> getAllUsers() {
+        List<UserResponseDto> userResponseDtos = userService.getAllUsers();
+        return ResponseEntity.ok(userResponseDtos);
     }
 
     // 특정 유저 조회 (GET)
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        User user = userService.getUserById(id);
-        return ResponseEntity.ok(user);
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
+        UserResponseDto userResponseDto = userService.getUserById(id);
+        return ResponseEntity.ok(userResponseDto);
     }
 
     // 유저 수정 (PUT)

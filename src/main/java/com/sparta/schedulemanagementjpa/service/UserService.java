@@ -7,7 +7,9 @@ import com.sparta.schedulemanagementjpa.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,22 +23,27 @@ public class UserService {
         user.setUserName(userRequestDto.getUserName());
         user.setEmail(userRequestDto.getEmail());
 
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
-        UserResponseDto userResponseDto = new UserResponseDto(user.getUserName(), user.getEmail());
-        return userResponseDto;
+        return new UserResponseDto(savedUser.getUserName(), savedUser.getEmail());
     }
 
     // 모든 유저 조회
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponseDto> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        List<UserResponseDto> userResponseDtos = users.stream()
+                .map(user -> new UserResponseDto(user.getUserName(), user.getEmail()))
+                .collect(Collectors.toList());
+        return userResponseDtos;
     }
 
     // 특정 유저 조회
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(
+    public UserResponseDto getUserById(Long id) {
+        User user = userRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
         );
+
+        return new UserResponseDto(user.getUserName(), user.getEmail());
     }
 
     // 유저 수정
