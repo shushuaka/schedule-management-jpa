@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schedule Management</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+  <h1 class="text-center">Schedule Management</h1>
+
+  <!-- User Form -->
+  <div class="card mt-4">
+    <div class="card-header">
+      <h3>Create User</h3>
+    </div>
+    <div class="card-body">
+      <form id="userForm">
+        <div class="form-group">
+          <label for="userName">User Name</label>
+          <input type="text" class="form-control" id="userName" placeholder="Enter user name" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" class="form-control" id="email" placeholder="Enter email" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Create User</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Schedule Form -->
+  <div class="card mt-4">
+    <div class="card-header">
+      <h3>Create Schedule</h3>
+    </div>
+    <div class="card-body">
+      <form id="scheduleForm">
+        <div class="form-group">
+          <label for="userId">User ID</label>
+          <input type="number" class="form-control" id="userId" placeholder="Enter user ID" required>
+        </div>
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input type="text" class="form-control" id="title" placeholder="Enter schedule title" required>
+        </div>
+        <div class="form-group">
+          <label for="content">Content</label>
+          <textarea class="form-control" id="content" rows="3" placeholder="Enter schedule content" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Create Schedule</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Schedule List -->
+  <div class="card mt-4">
+    <div class="card-header">
+      <h3>Schedule List</h3>
+    </div>
+    <div class="card-body">
+      <ul id="scheduleList" class="list-group">
+        <!-- Schedules will be added here dynamically -->
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Create User Functionality
+  document.getElementById('userForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const userName = document.getElementById('userName').value;
+    const email = document.getElementById('email').value;
+
+    // Send a request to create a user
+    fetch('http://localhost:8080/api/users', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        userName: userName,
+        email: email
+      })
+    })
+            .then(response => response.json())
+            .then(data => {
+              alert('User created successfully!');
+              console.log('User created:', data);
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              alert('Failed to create user');
+            });
+  });
+
+  // Create Schedule Functionality
+  document.getElementById('scheduleForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const userId = document.getElementById('userId').value;
+    const title = document.getElementById('title').value;
+    const content = document.getElementById('content').value;
+
+    // Send a request to create a schedule
+    fetch('http://localhost:8080/api/schedules', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        userId: userId,
+        title: title,
+        content: content
+      })
+    })
+            .then(response => response.json())
+            .then(data => {
+              alert('Schedule created successfully!');
+              console.log('Schedule created:', data);
+              addScheduleToList(data);
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              alert('Failed to create schedule');
+            });
+  });
+
+  // Add Schedule to List
+  function addScheduleToList(schedule) {
+    const scheduleList = document.getElementById('scheduleList');
+    const listItem = document.createElement('li');
+    listItem.className = 'list-group-item';
+    listItem.textContent = `User ID: ${schedule.userId}, Title: ${schedule.title}, Content: ${schedule.content}`;
+    scheduleList.appendChild(listItem);
+  }
+
+  // Load Existing Schedules on Page Load
+  document.addEventListener('DOMContentLoaded', function() {
+    fetch('http://localhost:8080/api/schedules')
+            .then(response => response.json())
+            .then(data => {
+              data.forEach(schedule => {
+                addScheduleToList(schedule);
+              });
+            })
+            .catch(error => {
+              console.error('Error:', error);
+            });
+  });
+</script>
+</body>
+</html>
