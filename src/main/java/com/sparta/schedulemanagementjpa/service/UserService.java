@@ -6,13 +6,14 @@ import com.sparta.schedulemanagementjpa.entity.User;
 import com.sparta.schedulemanagementjpa.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserService {
 
@@ -30,6 +31,7 @@ public class UserService {
     }
 
     // 모든 유저 조회
+    @Transactional(readOnly = true)
     public List<UserResponseDto> getAllUsers() {
         List<User> users = userRepository.findAll();
         List<UserResponseDto> userResponseDtos = users.stream()
@@ -39,6 +41,7 @@ public class UserService {
     }
 
     // 특정 유저 조회
+    @Transactional(readOnly = true)
     public UserResponseDto getUserById(Long id) {
         User user = userRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
@@ -57,9 +60,8 @@ public class UserService {
         user.setEmail(userRequestDto.getEmail());
         user.setModifiedAt(LocalDateTime.now());
 
-        User updateUser = userRepository.save(user);
-
-        return new UserResponseDto(updateUser.getUserName(), updateUser.getEmail());
+        //save() 제거, 더티체킹으로 자동 업데이트
+        return new UserResponseDto(user.getUserName(), user.getEmail());
     }
 
     // 유저 삭제

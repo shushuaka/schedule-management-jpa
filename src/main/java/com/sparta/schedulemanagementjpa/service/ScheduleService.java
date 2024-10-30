@@ -12,11 +12,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service // 이 클래스가 비즈니스 로직을 처리하는 서비스 클래스임을 명시
+@Service
+@Transactional
 @RequiredArgsConstructor
 public class ScheduleService {
 
@@ -27,12 +29,12 @@ public class ScheduleService {
     public Page<ScheduleResponseDto> getPagedSchedules(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "modifiedAt"));
         return scheduleRepository.findAll(pageable)
-        .map(schedule -> new ScheduleResponseDto(
-                schedule.getId(),
-                schedule.getTitle(),
-                schedule.getContent(),
-                schedule.getUserName()
-        ));
+                .map(schedule -> new ScheduleResponseDto(
+                        schedule.getId(),
+                        schedule.getTitle(),
+                        schedule.getContent(),
+                        schedule.getUserName()
+                ));
     }
 
     // 일정 생성 (저장)
@@ -62,6 +64,7 @@ public class ScheduleService {
     }
 
     // 모든 일정 조회
+    @Transactional(readOnly = true)
     public List<ScheduleResponseDto> getAllSchedules() {
         List<Schedule> schedules = scheduleRepository.findAll();
         return schedules.stream()
@@ -75,9 +78,10 @@ public class ScheduleService {
     }
 
     // 특정 일정 조회
+    @Transactional(readOnly = true)
     public ScheduleResponseDto getScheduleById(Long id) {
         Schedule schedule = scheduleRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("해당 일정이 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당 일정이 존재하지 않습니다."));
         return new ScheduleResponseDto(
                 schedule.getId(),
                 schedule.getTitle(),
@@ -96,16 +100,8 @@ public class ScheduleService {
         schedule.setContent(scheduleRequestDto.getContent());
         schedule.setModifiedAt(scheduleRequestDto.getModifiedAt());
 
-        // 수정된 엔티티 저장
-        Schedule updatedSchedule = scheduleRepository.save(schedule);
-
-        // 엔티티 -> DTO 변환 후 반환
-        return new ScheduleResponseDto(
-                updatedSchedule.getId(),
-                updatedSchedule.getTitle(),
-                updatedSchedule.getContent(),
-                updatedSchedule.getUserName()
-        );
+        // save() 제거, 더티체킹으로 자동 업데이트
+        return new ScheduleResponseDto(schedule.getId(), schedule.getTitle(), schedule.getContent(), schedule.getUserName());
     }
 
     // 일정 삭제
