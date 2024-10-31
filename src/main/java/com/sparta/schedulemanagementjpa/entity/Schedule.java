@@ -47,10 +47,8 @@ public class Schedule {
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
-    // 작성 유저 (ManyToOne 관계)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user; // 일정 작성 유저
-
-    // 생성자, 수정자 메서드는 Lombok에서 제공하는 @Getter, @Setter를 통해 자동 생성
+    // UserSchedule과의 관계 설정 (지연 로딩 적용)
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserSchedule> userSchedules = new ArrayList<>();
 }
+

@@ -1,9 +1,6 @@
 package com.sparta.schedulemanagementjpa.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -39,8 +36,8 @@ public class User {
     @LastModifiedDate // 수정 일자
     private LocalDateTime modifiedAt;
 
+    // UserSchedule과 관계 설정 (지연 로딩 적용)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Schedule> schedules = new ArrayList<>();
+    private List<UserSchedule> userSchedules = new ArrayList<>();
 
-    // 유저와 일정의 관계는 양방향 설정 (일정을 작성한 유저 정보가 일정에도 저장됨)
 }
