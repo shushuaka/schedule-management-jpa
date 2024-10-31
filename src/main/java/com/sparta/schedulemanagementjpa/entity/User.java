@@ -29,6 +29,9 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email; // 이메일
 
+    @Column(nullable = false) // 비밀번호
+    private String password;
+
     @CreatedDate // 생성 일자
     @Column(updatable = false)
     private LocalDateTime createdAt;

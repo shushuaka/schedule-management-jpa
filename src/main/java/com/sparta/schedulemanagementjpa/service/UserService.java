@@ -1,5 +1,6 @@
 package com.sparta.schedulemanagementjpa.service;
 
+import com.sparta.schedulemanagementjpa.config.PasswordEncoder;
 import com.sparta.schedulemanagementjpa.dto.UserRequestDto;
 import com.sparta.schedulemanagementjpa.dto.UserResponseDto;
 import com.sparta.schedulemanagementjpa.entity.User;
@@ -18,12 +19,17 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    // 유저 생성
+    // 유저 생성 (회원가입 추가)
     public UserResponseDto createUser(UserRequestDto userRequestDto) {
         User user = new User();
         user.setUserName(userRequestDto.getUserName());
         user.setEmail(userRequestDto.getEmail());
+
+        // 비밀번호 암호화 후 저장
+        String encodedPassword = passwordEncoder.encode(userRequestDto.getPassword());
+        user.setPassword(encodedPassword);
 
         User savedUser = userRepository.save(user);
 
@@ -58,6 +64,11 @@ public class UserService {
 
         user.setUserName(userRequestDto.getUserName());
         user.setEmail(userRequestDto.getEmail());
+
+        // 비밀번호도 암호화 후 저장
+        String encodedPassword = passwordEncoder.encode(userRequestDto.getPassword());
+        user.setPassword(encodedPassword);
+
         user.setModifiedAt(LocalDateTime.now());
 
         //save() 제거, 더티체킹으로 자동 업데이트

@@ -22,7 +22,7 @@ public class UserController {
     private final UserService userService;
 
     // 유저 생성 (POST)
-    @PostMapping
+    @PostMapping("/register")
     public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody UserRequestDto userRequestDto) {
         UserResponseDto createdUser = userService.createUser(userRequestDto);
         return ResponseEntity.ok(createdUser);
