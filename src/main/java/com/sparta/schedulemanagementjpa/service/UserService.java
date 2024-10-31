@@ -1,5 +1,6 @@
 package com.sparta.schedulemanagementjpa.service;
 
+import com.sparta.schedulemanagementjpa.config.JwtTokenProvider;
 import com.sparta.schedulemanagementjpa.config.PasswordEncoder;
 import com.sparta.schedulemanagementjpa.dto.UserRequestDto;
 import com.sparta.schedulemanagementjpa.dto.UserResponseDto;
@@ -20,8 +21,9 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    // 유저 생성 (회원가입 추가)
+    // 유저 생성 (회원가입 추가 & JWT 발급)
     public UserResponseDto createUser(UserRequestDto userRequestDto) {
         User user = new User();
         user.setUserName(userRequestDto.getUserName());
@@ -33,7 +35,11 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
 
-        return new UserResponseDto(savedUser.getUserName(), savedUser.getEmail());
+        // JWT 토큰 생성
+        String token = jwtTokenProvider.createToken(savedUser.getEmail());
+
+        // UserResponseDto에 JWT 토큰을 포함하여 반환
+        return new UserResponseDto(savedUser.getUserName(), savedUser.getEmail(), token);
     }
 
     // 모든 유저 조회

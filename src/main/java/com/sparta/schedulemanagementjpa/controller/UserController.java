@@ -2,17 +2,13 @@ package com.sparta.schedulemanagementjpa.controller;
 
 import com.sparta.schedulemanagementjpa.dto.UserRequestDto;
 import com.sparta.schedulemanagementjpa.dto.UserResponseDto;
-import com.sparta.schedulemanagementjpa.entity.User;
-import com.sparta.schedulemanagementjpa.repository.UserRepository;
 import com.sparta.schedulemanagementjpa.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
@@ -21,11 +17,11 @@ public class UserController {
 
     private final UserService userService;
 
-    // 유저 생성 (POST)
+    // 유저 생성 회원가입 (POST)
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody UserRequestDto userRequestDto) {
-        UserResponseDto createdUser = userService.createUser(userRequestDto);
-        return ResponseEntity.ok(createdUser);
+    public ResponseEntity<String> createUser(@Valid @RequestBody UserRequestDto userRequestDto) {
+        String token = String.valueOf(userService.createUser(userRequestDto)); // 회원가입 후 JWT 토큰 반환
+        return ResponseEntity.ok(token);
     }
 
     // 모든 유저 조회 (GET)
