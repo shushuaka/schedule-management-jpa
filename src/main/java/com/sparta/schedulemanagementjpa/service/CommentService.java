@@ -6,10 +6,12 @@ import com.sparta.schedulemanagementjpa.repository.CommentRepository;
 import com.sparta.schedulemanagementjpa.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CommentService {
 
@@ -26,6 +28,7 @@ public class CommentService {
     }
 
     // 특정 일정에 달린 모든 댓글 조회
+    @Transactional(readOnly = true)
     public List<Comment> getCommentsByScheduleId(Long scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalArgumentException("해당 일정이 존재하지 않습니다.")
@@ -41,7 +44,8 @@ public class CommentService {
         comment.setContent(commentDetails.getContent());
         comment.setModifiedAt(commentDetails.getModifiedAt());
 
-        return commentRepository.save(comment);
+        //save() 제거, 더티체킹으로 자동 업데이트
+        return comment;
     }
 
     // 댓글 삭제
