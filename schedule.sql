@@ -1,23 +1,37 @@
-CREATE DATABASE schedule_management;
-
-USE schedule_management;
-
-CREATE TABLE Author (
-                        id BIGINT AUTO_INCREMENT PRIMARY KEY,    -- 고유 식별자
-                        name VARCHAR(50) NOT NULL,               -- 작성자 이름
-                        email VARCHAR(100) UNIQUE NOT NULL,      -- 작성자 이메일, 중복 불가
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- 생성 시간
-                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- 수정 시간
+CREATE TABLE User (
+                      id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                      userName VARCHAR(255) NOT NULL UNIQUE,
+                      email VARCHAR(255) NOT NULL UNIQUE,
+                      password VARCHAR(255) NOT NULL,
+                      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                      modifiedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Schedule 테이블 생성
 CREATE TABLE Schedule (
-                          id BIGINT AUTO_INCREMENT PRIMARY KEY,    -- 고유 식별자
-                          title VARCHAR(100) NOT NULL,             -- 스케줄 제목
-                          description TEXT,                        -- 스케줄 설명
-                          date DATE NOT NULL,                      -- 스케줄 날짜
-                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- 생성 시간
-                          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- 수정 시간
-                          author_id BIGINT,                        -- 작성자 ID, 외래 키로 참조
-                          FOREIGN KEY (author_id) REFERENCES Author(id) -- 작성자 테이블과의 관계 정의
+                          id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                          userName VARCHAR(255) NOT NULL,
+                          title VARCHAR(255) NOT NULL,
+                          content TEXT NOT NULL,
+                          createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                          modifiedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                          user_id BIGINT,
+                          FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE
+);
+
+CREATE TABLE UserSchedule (
+                              id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                              user_id BIGINT NOT NULL,
+                              schedule_id BIGINT NOT NULL,
+                              FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE,
+                              FOREIGN KEY (schedule_id) REFERENCES Schedule(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Comment (
+                         id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                         schedule_id BIGINT NOT NULL,
+                         userName VARCHAR(255) NOT NULL,
+                         content TEXT NOT NULL,
+                         createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                         modifiedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                         FOREIGN KEY (schedule_id) REFERENCES Schedule(id) ON DELETE CASCADE
 );
