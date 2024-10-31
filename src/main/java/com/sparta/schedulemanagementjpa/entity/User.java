@@ -24,13 +24,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 기본 키 생성 전략 설정 (자동 증가)
     private Long id;
 
-    @NotBlank(message = "유저명은 필수 입력 값입니다.")
-    @Size(max = 20, message = "유저명은 최대 20자까지 입력할 수 있습니다.")
+
     @Column(nullable = false, unique = true)
     private String userName; // 유저명
 
-    @NotBlank(message = "이메일은 필수 입력 값입니다.")
-    @Email(message = "올바른 이메일 형식이어야 합니다.")
+
     @Column(nullable = false, unique = true)
     private String email; // 이메일
 

@@ -25,11 +25,11 @@ public class Schedule {
     @Column(nullable = false)
     private String userName; // 작성 유저명
 
-    @NotBlank(message = "할일 제목은 필수 입력 값입니다.")
+
     @Column(nullable = false)
     private String title; // 할일 제목
 
-    @NotBlank(message = "할일 내용은 필수 입력 값입니다.")
+
     @Column(nullable = false)
     private String content; // 할일 내용
 
