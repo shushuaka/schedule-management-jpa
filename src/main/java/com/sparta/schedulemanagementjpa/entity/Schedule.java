@@ -47,6 +47,11 @@ public class Schedule {
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
+    // User와의 관계 설정 (지연 로딩 적용)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     // UserSchedule과의 관계 설정 (지연 로딩 적용)
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserSchedule> userSchedules = new ArrayList<>();
